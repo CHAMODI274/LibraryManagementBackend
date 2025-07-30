@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 // This namespace provides the [JsonIgnore] attribute
 // and other features for JSON serialization and deserialization
@@ -10,7 +11,10 @@ namespace LibraryManagementBackend.Models
     public class Author
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
+
+        [Required, StringLength(50)]
+        public string Name { get; set; } = string.Empty;
+
         public string? Bio { get; set; }
 
 

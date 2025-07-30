@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 using LibraryManagementBackend.Models;
 using Microsoft.AspNetCore.Authorization;
 
+
 namespace LibraryManagementBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+   // [Authorize(Roles = "Admin")]
     public class RolesController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> _roleManager;

@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 
 namespace LibraryManagementBackend.Models
 {
-    public class Publisher
+    public class PublisherDTO
     {
         public int Id { get; set; }
 
@@ -12,8 +10,5 @@ namespace LibraryManagementBackend.Models
         public string Name { get; set; } = string.Empty;
 
         public string? Address { get; set; }
-
-        [JsonIgnore]
-         public List<Book>? Books { get; set; }
     }
 }

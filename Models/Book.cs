@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 //using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -9,8 +10,13 @@ namespace LibraryManagementBackend.Models
     public class Book
     {
         public int Id { get; set; }
-        public string? Title { get; set; }
-        public string? ISBN { get; set; }
+
+        [Required, StringLength(100)]
+        public string Title { get; set; } = string.Empty;
+
+        [Required]
+        public string ISBN { get; set; } = string.Empty;
+        
         public int PublishedYear { get; set; }
 
 
