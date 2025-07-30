@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
 
+
 namespace LibraryManagementBackend.Models
 {
-    public class LibraryContext : DbContext
+    public class LibraryContext : IdentityDbContext<IdentityUser>
     {
         public LibraryContext(DbContextOptions<LibraryContext> options) : base(options) { }
 

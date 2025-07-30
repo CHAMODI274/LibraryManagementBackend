@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 
 namespace LibraryManagementBackend.Models
@@ -9,7 +10,7 @@ namespace LibraryManagementBackend.Models
         public string? Name { get; set; }
         public string? Address { get; set; }
 
-
+        [JsonIgnore]
          public List<Book>? Books { get; set; }
     }
 }

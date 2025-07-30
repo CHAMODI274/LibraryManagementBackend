@@ -1,5 +1,7 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Text.Json.Serialization;
+
+//using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 
 namespace LibraryManagementBackend.Models
@@ -20,7 +22,9 @@ namespace LibraryManagementBackend.Models
         public Category? Category { get; set; }
 
 
+        [JsonIgnore]
         public List<BookAuthor>? BookAuthors { get; set; }
+        [JsonIgnore]
         public List<Loan>? Loans { get; set; }
     }
 }

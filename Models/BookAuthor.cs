@@ -1,6 +1,5 @@
 // Join table for many-to many relationship between Book & Author
 
-
 using System.Collections.Generic;
 
 
