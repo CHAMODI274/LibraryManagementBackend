@@ -1,5 +1,5 @@
-
 using LibraryManagementBackend.Models;
+using LibraryManagementBackend.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity; 
 using LibraryManagementBackend.Controllers;
@@ -19,6 +19,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<EmailService>();
+
+builder.Services.AddScoped<IBookService, BookService>();
 
 builder.Services.AddScoped<RolesController>();
 
@@ -50,6 +52,7 @@ builder.Services.AddAuthentication(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 

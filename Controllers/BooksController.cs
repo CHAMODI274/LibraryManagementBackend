@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagementBackend.Models;
+using LibraryManagementBackend.Services;
+
 
 namespace LibraryManagementBackend.Controllers
 {
@@ -13,95 +15,143 @@ namespace LibraryManagementBackend.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly LibraryContext _context;
+        private readonly IBookService _bookService;
+        private readonly ILogger<BooksController> _logger;
 
-        public BooksController(LibraryContext context)
+        public BooksController(IBookService bookService, ILogger<BooksController> logger)
         {
-            _context = context;
+            _bookService = bookService;
+            _logger = logger;
         }
 
         // GET: api/Books
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
-            return await _context.Books.ToListAsync();
+            try
+            {
+                _logger.LogInformation("Fetching all books.");
+                var books = await _bookService.GetAllBooksAsync();
+                if (books == null || !books.Any())
+                {
+                    _logger.LogWarning("No books found.");
+                    return NotFound("No books found.");
+                }
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching books.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
         // GET: api/Books/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetBook(int id)
         {
-            var book = await _context.Books.FindAsync(id);
-
-            if (book == null)
+            try
             {
-                return NotFound();
-            }
+                _logger.LogInformation($"Fetching book with ID {id}");
+                var book = await _bookService.GetBookByIdAsync(id);
 
-            return book;
+                if (book == null)
+                {
+                    _logger.LogWarning($"Book with ID {id} not found.");
+                    return NotFound($"Book with ID {id} not found.");
+                }
+
+                return Ok(book);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching the book.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
         // PUT: api/Books/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBook(int id, Book book)
         {
-            if (id != book.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(book).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (id != book.Id)
+                {
+                    _logger.LogWarning("Book ID mismatch.");
+                    return BadRequest("Book ID mismatch.");
+                }
+
+                await _bookService.UpdateBookAsync(id, book);
+                _logger.LogInformation($"Book with ID {id} updated.");
+                return NoContent();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BookExists(id))
+                if (await _bookService.GetBookByIdAsync(id) == null)
                 {
-                    return NotFound();
+                    _logger.LogWarning($"Book with ID {id} not found for update.");
+                    return NotFound($"Book with ID {id} not found.");
                 }
                 else
                 {
+                    _logger.LogError("Error updating book.");
                     throw;
                 }
             }
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while updating the book.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
         // POST: api/Books
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Book>> PostBook(Book book)
         {
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (book == null)
+                {
+                    _logger.LogWarning("Received empty book object.");
+                    return BadRequest("Book data cannot be null.");
+                }
 
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
+                await _bookService.AddBookAsync(book);
+                _logger.LogInformation($"Book with ID {book.Id} created.");
+                return CreatedAtAction("GetBook", new { id = book.Id }, book);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating the book.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
-        // DELETE: api/Books/5
+        // DELETE: api/Students/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
+            try
             {
-                return NotFound();
+                var book = await _bookService.GetBookByIdAsync(id);
+                if (book == null)
+                {
+                    _logger.LogWarning($"Book with ID {id} not found.");
+                    return NotFound($"Book with ID {id} not found.");
+                }
+
+                await _bookService.DeleteBookAsync(id);
+                _logger.LogInformation($"Book with ID {id} deleted.");
+                return NoContent();
             }
-
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool BookExists(int id)
-        {
-            return _context.Books.Any(e => e.Id == id);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting the .");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
     }
 }
+
