@@ -303,3 +303,4 @@ C:\Users\ASUS\LibraryManagementBackend\obj\Debug\net9.0\LibraryManagementBackend
 C:\Users\ASUS\LibraryManagementBackend\bin\Debug\net9.0\BouncyCastle.Cryptography.dll
 C:\Users\ASUS\LibraryManagementBackend\bin\Debug\net9.0\MailKit.dll
 C:\Users\ASUS\LibraryManagementBackend\bin\Debug\net9.0\MimeKit.dll
+C:\Users\ASUS\LibraryManagementBackend\bin\Debug\net9.0\localhost-5167.postman_collection.json
