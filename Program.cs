@@ -20,7 +20,10 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<EmailService>();
 
+
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<ILoanService, LoanService>();
+
 
 builder.Services.AddScoped<RolesController>();
 

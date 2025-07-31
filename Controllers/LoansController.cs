@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagementBackend.Models;
+using LibraryManagementBackend.Services;
+
 
 namespace LibraryManagementBackend.Controllers
 {
@@ -13,95 +15,143 @@ namespace LibraryManagementBackend.Controllers
     [ApiController]
     public class LoansController : ControllerBase
     {
-        private readonly LibraryContext _context;
+        private readonly ILoanService _loanService;
+        private readonly ILogger<LoansController> _logger;
 
-        public LoansController(LibraryContext context)
+        public LoansController(ILoanService loanService, ILogger<LoansController> logger)
         {
-            _context = context;
+            _loanService = loanService;
+            _logger = logger;
         }
 
         // GET: api/Loans
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Loan>>> GetLoans()
         {
-            return await _context.Loans.ToListAsync();
+            try
+            {
+                _logger.LogInformation("Fetching all loans.");
+                var loans = await _loanService.GetAllLoansAsync();
+                if (loans == null || !loans.Any())
+                {
+                    _logger.LogWarning("No books found.");
+                    return NotFound("No books found.");
+                }
+                return Ok(loans);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching loans.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
-        // GET: api/Loans/5
+        // GET: api/Books/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Loan>> GetLoan(int id)
         {
-            var loan = await _context.Loans.FindAsync(id);
-
-            if (loan == null)
+            try
             {
-                return NotFound();
-            }
+                _logger.LogInformation($"Fetching loan with ID {id}");
+                var loan = await _loanService.GetLoanByIdAsync(id);
 
-            return loan;
+                if (loan == null)
+                {
+                    _logger.LogWarning($"loan with ID {id} not found.");
+                    return NotFound($"Loan with ID {id} not found.");
+                }
+
+                return Ok(loan);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching the loan.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
         // PUT: api/Loans/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLoan(int id, Loan loan)
         {
-            if (id != loan.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(loan).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (id != loan.Id)
+                {
+                    _logger.LogWarning("Loan ID mismatch.");
+                    return BadRequest("Loan ID mismatch.");
+                }
+
+                await _loanService.UpdateLoanAsync(id, loan);
+                _logger.LogInformation($"Loan with ID {id} updated.");
+                return NoContent();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!LoanExists(id))
+                if (await _loanService.GetLoanByIdAsync(id) == null)
                 {
-                    return NotFound();
+                    _logger.LogWarning($"Loan with ID {id} not found for update.");
+                    return NotFound($"Loan with ID {id} not found.");
                 }
                 else
                 {
+                    _logger.LogError("Error updating Loan.");
                     throw;
                 }
             }
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while updating the loan.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
         // POST: api/Loans
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Loan>> PostLoan(Loan loan)
         {
-            _context.Loans.Add(loan);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (loan == null)
+                {
+                    _logger.LogWarning("Received empty loan object.");
+                    return BadRequest("loan data cannot be null.");
+                }
 
-            return CreatedAtAction("GetLoan", new { id = loan.Id }, loan);
+                await _loanService.AddLoanAsync(loan);
+                _logger.LogInformation($"Loan with ID {loan.Id} created.");
+                return CreatedAtAction("GetLoan", new { id = loan.Id }, loan);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating the loan.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
         // DELETE: api/Loans/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLoan(int id)
         {
-            var loan = await _context.Loans.FindAsync(id);
-            if (loan == null)
+            try
             {
-                return NotFound();
+                var loan = await _loanService.GetLoanByIdAsync(id);
+                if (loan == null)
+                {
+                    _logger.LogWarning($"Loan with ID {id} not found.");
+                    return NotFound($"Loan with ID {id} not found.");
+                }
+
+                await _loanService.DeleteLoanAsync(id);
+                _logger.LogInformation($"Loan with ID {id} deleted.");
+                return NoContent();
             }
-
-            _context.Loans.Remove(loan);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool LoanExists(int id)
-        {
-            return _context.Loans.Any(e => e.Id == id);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting the Loan.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
     }
 }
+
