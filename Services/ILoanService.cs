@@ -1,6 +1,4 @@
 using LibraryManagementBackend.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace LibraryManagementBackend.Services
 {
@@ -8,8 +6,15 @@ namespace LibraryManagementBackend.Services
     {
         Task<IEnumerable<Loan>> GetAllLoansAsync();
         Task<Loan?> GetLoanByIdAsync(int id);
-        Task AddLoanAsync(Loan loan);
-        Task UpdateLoanAsync(int id, Loan loan);
-        Task DeleteLoanAsync(int id);
+        Task<Loan> CreateLoanAsync(Loan loan);
+        Task<Loan> UpdateLoanAsync(int id, Loan loan);
+        Task<bool> DeleteLoanAsync(int id);
+
+        Task<bool> LoanExistsAsync(int id);
+        Task<IEnumerable<Loan>> GetLoansByUserAsync(string userId);
+        Task<IEnumerable<Loan>> GetActiveLoansByUserAsync(string userId);
+        Task<IEnumerable<Loan>> GetOverdueLoansAsync();
+        Task<Loan> ReturnBookAsync(int loanId);
+        Task<bool> CanBorrowBookAsync(int bookId);
     }
 }

@@ -1,10 +1,12 @@
 using LibraryManagementBackend.Models;
 using LibraryManagementBackend.Services;
+using LibraryManagementBackend.Repository;
+using LibraryManagementBackend.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity; 
-using LibraryManagementBackend.Controllers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+
 using System.Text;
 
 
@@ -22,6 +24,11 @@ builder.Services.AddScoped<EmailService>();
 
 
 // Register Repositories
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
+builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
 
 //Register Services

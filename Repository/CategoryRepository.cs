@@ -1,10 +1,10 @@
 using LibraryManagementBackend.Models;
-using NuGet.LibraryModel;
+using LibraryManagementBackend.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibraryManagementBackend.Repositories
+namespace LibraryManagementBackend.Repository
 {
-    public class CategoryRepository
+    public class CategoryRepository : ICategoryRepository
     {
         private readonly LibraryContext _context;
 
@@ -13,14 +13,21 @@ namespace LibraryManagementBackend.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Category>> GetAllAsync() => await _context.Categories.ToListAsync();
+        public async Task<IEnumerable<Category>> GetAllAsync()
+        {
+            return await _context.Categories.ToListAsync();
+        }
 
-        public async Task<Category> GetByIdAsync(int id) => await _context.Categories.FindAsync(id);
+        public async Task<Category?> GetByIdAsync(int id)
+        {
+            return await _context.Categories.FindAsync(id);
+        }
 
-        public async Task AddAsync(Category category)
+        public async Task<Category> AddAsync(Category category)
         {
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
+            return category;
         }
 
         public async Task UpdateAsync(Category category)
@@ -37,6 +44,17 @@ namespace LibraryManagementBackend.Repositories
                 _context.Categories.Remove(category);
                 await _context.SaveChangesAsync();
             }
+        }
+
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Categories.AnyAsync(c => c.Id == id);
+        }
+
+        public async Task<Category?> GetByNameAsync(string name)
+        {
+            return await _context.Categories.FirstOrDefaultAsync(c => c.Name == name);
         }
     }
 }

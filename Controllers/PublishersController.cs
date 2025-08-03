@@ -118,7 +118,7 @@ namespace LibraryManagementBackend.Controllers
                     return BadRequest("Publisher data cannot be null.");
                 }
 
-                await _publisherService.AddPublisherAsync(publisher);
+                await _publisherService.CreatePublisherAsync(publisher);
                 _logger.LogInformation($"Publisher with ID {publisher.Id} created.");
                 return CreatedAtAction("GetPublisher", new { id = publisher.Id }, publisher);
             }

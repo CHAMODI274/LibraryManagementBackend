@@ -118,7 +118,7 @@ namespace LibraryManagementBackend.Controllers
                     return BadRequest("Author data cannot be null.");
                 }
 
-                await _authorService.AddAuthorAsync(author);
+                await _authorService.CreateAuthorAsync(author);
                 _logger.LogInformation($"Author with ID {author.Id} created.");
                 return CreatedAtAction("GetAuthor", new { id = author.Id }, author);
             }

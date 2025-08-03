@@ -6,8 +6,9 @@ namespace LibraryManagementBackend.Services
     {
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
         Task<Category?> GetCategoryByIdAsync(int id);
-        Task AddCategoryAsync(Category category);
-        Task UpdateCategoryAsync(int id, Category category);
-        Task DeleteCategoryAsync(int id);
+        Task<Category> CreateCategoryAsync(Category category);
+        Task<Category> UpdateCategoryAsync(int id, Category category);
+        Task<bool> DeleteCategoryAsync(int id);
+        Task<bool> CategoryExistsAsync(int id);
     }
 }

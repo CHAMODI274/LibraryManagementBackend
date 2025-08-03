@@ -118,7 +118,7 @@ namespace LibraryManagementBackend.Controllers
                     return BadRequest("loan data cannot be null.");
                 }
 
-                await _loanService.AddLoanAsync(loan);
+                await _loanService.CreateLoanAsync(loan);
                 _logger.LogInformation($"Loan with ID {loan.Id} created.");
                 return CreatedAtAction("GetLoan", new { id = loan.Id }, loan);
             }

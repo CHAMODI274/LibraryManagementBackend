@@ -119,7 +119,7 @@ namespace LibraryManagementBackend.Controllers
                     return BadRequest("category data cannot be null.");
                 }
 
-                await _categoryService.AddCategoryAsync(category);
+                await _categoryService.CreateCategoryAsync(category);
                 _logger.LogInformation($"Category with ID {category.Id} created.");
                 return CreatedAtAction("GetCategory", new { id = category.Id }, category);
             }

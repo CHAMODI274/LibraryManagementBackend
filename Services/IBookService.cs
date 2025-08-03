@@ -1,6 +1,5 @@
 using LibraryManagementBackend.Models;
-//using System.Threading.Tasks;
-//using System.Collections.Generic;
+
 
 namespace LibraryManagementBackend.Services
 {
@@ -8,8 +7,13 @@ namespace LibraryManagementBackend.Services
     {
         Task<IEnumerable<Book>> GetAllBooksAsync();
         Task<Book?> GetBookByIdAsync(int id);
-        Task AddBookAsync(Book book);
-        Task UpdateBookAsync(int id, Book book);
-        Task DeleteBookAsync(int id);
+        Task<Book> CreateBookAsync(Book book);
+        Task<Book> UpdateBookAsync(int id, Book book);
+        Task<bool> DeleteBookAsync(int id);
+        
+        Task<bool> BookExistsAsync(int id);
+        Task<IEnumerable<Book>> GetBooksByAuthorAsync(int authorId);
+        Task<IEnumerable<Book>> GetBooksByCategoryAsync(int categoryId);
+        Task<IEnumerable<Book>> GetBooksByPublisherAsync(int publisherId);
     }
 }
