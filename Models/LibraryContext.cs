@@ -20,25 +20,48 @@ namespace LibraryManagementBackend.Models
 
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+          protected override void OnModelCreating(ModelBuilder modelBuilder)
+          {
+               base.OnModelCreating(modelBuilder);
 
+          // Configure BookAuthor many-to-many relationship
+               modelBuilder.Entity<BookAuthor>()
+                    .HasKey(ba => new { ba.BookId, ba.AuthorId });
 
-            modelBuilder.Entity<BookAuthor>()
-                 .HasKey(ba => new { ba.BookId, ba.AuthorId });
+          // Book -> BookAuthor relationship
+               modelBuilder.Entity<BookAuthor>()
+                    .HasOne(ba => ba.Book)
+                    .WithMany(ba => ba.BookAuthors)
+                    .HasForeignKey(ba => ba.AuthorId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
+          // Author -> BookAuthor relationship
+               modelBuilder.Entity<BookAuthor>()
+                    .HasOne(ba => ba.Author)
+                    .WithMany(ba => ba.BookAuthors)
+                    .HasForeignKey(ba => ba.AuthorId)
+                    .OnDelete(DeleteBehavior.Cascade); 
 
-            modelBuilder.Entity<BookAuthor>()
-                 .HasOne(ba => ba.Book)
-                 .WithMany(ba => ba.BookAuthors)
-                 .HasForeignKey(ba => ba.AuthorId);  
+               // Book -> Publisher relationship (one-to-many)
+            modelBuilder.Entity<Book>()
+                .HasOne(b => b.Publisher)
+                .WithMany(p => p.Books)
+                .HasForeignKey(b => b.PublisherId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting publisher if books exist
 
+            // Book -> Category relationship (one-to-many)
+            modelBuilder.Entity<Book>()
+                .HasOne(b => b.Category)
+                .WithMany(c => c.Books)
+                .HasForeignKey(b => b.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting category if books exist
 
-            modelBuilder.Entity<BookAuthor>()
-                 .HasOne(ba => ba.Author)
-                 .WithMany(ba => ba.BookAuthors)
-                 .HasForeignKey(ba => ba.AuthorId);  
+            // Loan -> Book relationship (one-to-many)
+            modelBuilder.Entity<Loan>()
+                .HasOne(l => l.Book)
+                .WithMany(b => b.Loans)
+                .HasForeignKey(l => l.BookId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting book if loans exist 
         }
      }
 }

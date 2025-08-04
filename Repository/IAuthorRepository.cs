@@ -10,7 +10,7 @@ namespace LibraryManagementBackend.Repository
         Task UpdateAsync(Author author);
         Task DeleteAsync(int id);
 
-        Task<bool> ExistsAsync(int id);
+        Task<bool> ExistsAsync(int id); 
         Task<Author?> GetByNameAsync(string name);
 
     }

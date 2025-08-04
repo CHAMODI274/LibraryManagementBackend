@@ -28,7 +28,6 @@ A .NET Core Web API for managing a library system, featuring user authentication
 
 ---
 
----
 
 ## Getting Started
 

@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 
-//using Microsoft.Extensions.Diagnostics.HealthChecks;
-
-
 namespace LibraryManagementBackend.Models
 {
     public class Book
